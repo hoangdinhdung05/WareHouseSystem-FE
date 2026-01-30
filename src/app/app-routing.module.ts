@@ -4,6 +4,7 @@ import { LoginComponent } from './authenticate/login/login.component';
 import { RegisterComponent } from './authenticate/register/register.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { WarehouseComponent } from './pages/warehouse/warehouse.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { AuthGuard } from './security/guards/auth.guard';
 import { GuestGuard } from './security/guards/guest.guard';
 
@@ -51,8 +52,8 @@ const routes: Routes = [
   //   data: { roles: ['ADMIN'] } // Yêu cầu role ADMIN
   // },
 
-  // Catch all - redirect về login
-  { path: '**', redirectTo: 'login' }
+  // 404 Page - Not Found
+  { path: '**', component: NotFoundComponent }
 ];
 
 @NgModule({
