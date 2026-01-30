@@ -1,2 +1,17 @@
-<router-outlet></router-outlet>
-<app-toastr></app-toastr>
+<div class="app-shell">
+  <!-- Sidebar cố định bên trái -->
+  <app-sidebar></app-sidebar>
+
+  <!-- Main area bên phải -->
+  <div class="main">
+    <app-header></app-header>
+
+    <!-- Content thay đổi theo từng page -->
+    <main class="content">
+      <app-dashboard></app-dashboard>
+      <!-- sau này bạn có thể thay bằng <router-outlet></router-outlet> -->
+    </main>
+
+    <app-footer></app-footer>
+  </div>
+</div>
