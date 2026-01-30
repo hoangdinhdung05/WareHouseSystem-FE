@@ -1,4 +1,5 @@
-<div class="app-shell">
+<!-- Layout with sidebar/header/footer for authenticated pages -->
+<div class="app-shell" *ngIf="showLayout">
   <!-- Sidebar cố định bên trái -->
   <app-sidebar></app-sidebar>
 
@@ -8,10 +9,15 @@
 
     <!-- Content thay đổi theo từng page -->
     <main class="content">
-      <app-dashboard></app-dashboard>
-      <!-- sau này bạn có thể thay bằng <router-outlet></router-outlet> -->
+      <router-outlet></router-outlet>
     </main>
 
     <app-footer></app-footer>
   </div>
 </div>
+
+<!-- Simple layout for login/register pages -->
+<div class="auth-shell" *ngIf="!showLayout">
+  <router-outlet></router-outlet>
+</div>
+

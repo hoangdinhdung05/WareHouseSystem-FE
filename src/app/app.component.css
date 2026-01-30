@@ -34,6 +34,13 @@
   gap: 20px;
 }
 
+/* Auth layout for login/register pages */
+.auth-shell {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--bg-body);
+}
+
 @media (max-width: 768px) {
   app-sidebar {
     display: none;
