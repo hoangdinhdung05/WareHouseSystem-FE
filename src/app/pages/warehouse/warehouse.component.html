@@ -8,7 +8,7 @@
       </div>
       <div class="header-actions">
         <button class="btn btn-export">Xuất Excel</button>
-        <button class="btn btn-primary">+ Thêm Kho Mới</button>
+        <button class="btn btn-primary" (click)="openCreateModal()">+ Thêm Kho Mới</button>
       </div>
     </div>
   </div>
@@ -215,7 +215,7 @@
               <div class="action-buttons">
                 <button
                   class="btn-action btn-view"
-                  (click)="selectedWarehouse = warehouse"
+                  (click)="viewDetails(warehouse)"
                   title="Xem chi tiết"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -225,6 +225,7 @@
                 </button>
                 <button
                   class="btn-action btn-edit"
+                  (click)="openEditModal(warehouse)"
                   title="Chỉnh sửa"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -233,6 +234,7 @@
                 </button>
                 <button
                   class="btn-action btn-delete"
+                  (click)="openDeleteConfirm(warehouse)"
                   title="Xóa"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -337,16 +339,314 @@
       <div class="modal-footer">
         <button
           class="btn btn-secondary"
-          (click)="selectedWarehouse = null"
+          (click)="closeDetails()"
         >
           Đóng
         </button>
-        <button class="btn btn-warning">
+        <button class="btn btn-info" (click)="openStatusChangeModal(selectedWarehouse); closeDetails()">
+          Đổi trạng thái
+        </button>
+        <button class="btn btn-warning" (click)="openEditModal(selectedWarehouse); closeDetails()">
           Chỉnh sửa
         </button>
-        <button class="btn btn-danger">
+        <button class="btn btn-danger" (click)="openDeleteConfirm(selectedWarehouse); closeDetails()">
           Xóa
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Warehouse Modal -->
+  <div class="modal-overlay" *ngIf="showCreateModal" (click)="closeCreateModal()">
+    <div class="modal-content modal-form" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Thêm Kho Mới</h2>
+        <button class="btn-close" (click)="closeCreateModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <form class="warehouse-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="create-code">Mã kho <span class="required">*</span></label>
+              <input
+                type="text"
+                id="create-code"
+                class="form-control"
+                [(ngModel)]="createForm.code"
+                name="code"
+                placeholder="Nhập mã kho"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="create-name">Tên kho <span class="required">*</span></label>
+              <input
+                type="text"
+                id="create-name"
+                class="form-control"
+                [(ngModel)]="createForm.name"
+                name="name"
+                placeholder="Nhập tên kho"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="create-address">Địa chỉ <span class="required">*</span></label>
+            <input
+              type="text"
+              id="create-address"
+              class="form-control"
+              [(ngModel)]="createForm.address"
+              name="address"
+              placeholder="Nhập địa chỉ"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="create-phone">Điện thoại <span class="required">*</span></label>
+              <input
+                type="tel"
+                id="create-phone"
+                class="form-control"
+                [(ngModel)]="createForm.phone"
+                name="phone"
+                placeholder="Nhập số điện thoại"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="create-email">Email <span class="required">*</span></label>
+              <input
+                type="email"
+                id="create-email"
+                class="form-control"
+                [(ngModel)]="createForm.email"
+                name="email"
+                placeholder="Nhập email"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="create-type">Loại kho <span class="required">*</span></label>
+              <select
+                id="create-type"
+                class="form-control"
+                [(ngModel)]="createForm.wareHouseType"
+                name="wareHouseType"
+                required
+              >
+                <option [value]="WareHouseType.MAIN">Kho chính</option>
+                <option [value]="WareHouseType.SATELLITE">Kho vệ tinh</option>
+                <option [value]="WareHouseType.TRANSIT">Kho trung chuyển</option>
+                <option [value]="WareHouseType.RETURN">Kho hoàn trả</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="create-status">Trạng thái <span class="required">*</span></label>
+              <select
+                id="create-status"
+                class="form-control"
+                [(ngModel)]="createForm.status"
+                name="status"
+                required
+              >
+                <option [value]="WareHouseStatus.ACTIVE">Hoạt động</option>
+                <option [value]="WareHouseStatus.INACTIVE">Ngừng hoạt động</option>
+                <option [value]="WareHouseStatus.UNDER_MAINTENANCE">Bảo trì</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="create-manager">Manager ID</label>
+            <input
+              type="text"
+              id="create-manager"
+              class="form-control"
+              [(ngModel)]="createForm.managerId"
+              name="managerId"
+              placeholder="Nhập Manager ID (tùy chọn)"
+            />
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeCreateModal()">Hủy</button>
+        <button class="btn btn-primary" (click)="submitCreate()">Tạo mới</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Warehouse Modal -->
+  <div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal()">
+    <div class="modal-content modal-form" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Chỉnh sửa Kho</h2>
+        <button class="btn-close" (click)="closeEditModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <form class="warehouse-form">
+          <div class="form-group">
+            <label for="edit-name">Tên kho <span class="required">*</span></label>
+            <input
+              type="text"
+              id="edit-name"
+              class="form-control"
+              [(ngModel)]="editForm.name"
+              name="name"
+              placeholder="Nhập tên kho"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="edit-address">Địa chỉ <span class="required">*</span></label>
+            <input
+              type="text"
+              id="edit-address"
+              class="form-control"
+              [(ngModel)]="editForm.address"
+              name="address"
+              placeholder="Nhập địa chỉ"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-phone">Điện thoại <span class="required">*</span></label>
+              <input
+                type="tel"
+                id="edit-phone"
+                class="form-control"
+                [(ngModel)]="editForm.phone"
+                name="phone"
+                placeholder="Nhập số điện thoại"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="edit-email">Email <span class="required">*</span></label>
+              <input
+                type="email"
+                id="edit-email"
+                class="form-control"
+                [(ngModel)]="editForm.email"
+                name="email"
+                placeholder="Nhập email"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-type">Loại kho <span class="required">*</span></label>
+              <select
+                id="edit-type"
+                class="form-control"
+                [(ngModel)]="editForm.wareHouseType"
+                name="wareHouseType"
+                required
+              >
+                <option [value]="WareHouseType.MAIN">Kho chính</option>
+                <option [value]="WareHouseType.SATELLITE">Kho vệ tinh</option>
+                <option [value]="WareHouseType.TRANSIT">Kho trung chuyển</option>
+                <option [value]="WareHouseType.RETURN">Kho hoàn trả</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="edit-manager">Manager ID</label>
+              <input
+                type="text"
+                id="edit-manager"
+                class="form-control"
+                [(ngModel)]="editForm.managerId"
+                name="managerId"
+                placeholder="Nhập Manager ID (tùy chọn)"
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeEditModal()">Hủy</button>
+        <button class="btn btn-warning" (click)="submitEdit()">Cập nhật</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" *ngIf="showDeleteConfirm" (click)="closeDeleteConfirm()">
+    <div class="modal-content modal-small" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Xác nhận xóa</h2>
+        <button class="btn-close" (click)="closeDeleteConfirm()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="confirm-message">
+          <svg class="warning-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/>
+          </svg>
+          <p>Bạn có chắc chắn muốn xóa kho <strong>{{ warehouseToDelete?.name }}</strong> ({{ warehouseToDelete?.code }})?</p>
+          <p class="warning-text">Hành động này không thể hoàn tác!</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDeleteConfirm()">Hủy</button>
+        <button class="btn btn-danger" (click)="confirmDelete()">Xóa</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Status Modal -->
+  <div class="modal-overlay" *ngIf="showStatusChangeModal" (click)="closeStatusChangeModal()">
+    <div class="modal-content modal-small" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Thay đổi trạng thái</h2>
+        <button class="btn-close" (click)="closeStatusChangeModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="status-change-content">
+          <p>Thay đổi trạng thái của kho <strong>{{ warehouseToChangeStatus?.name }}</strong></p>
+          <div class="form-group">
+            <label for="new-status">Chọn trạng thái mới</label>
+            <select
+              id="new-status"
+              class="form-control"
+              [(ngModel)]="newStatus"
+              name="newStatus"
+            >
+              <option [value]="WareHouseStatus.ACTIVE">Hoạt động</option>
+              <option [value]="WareHouseStatus.INACTIVE">Ngừng hoạt động</option>
+              <option [value]="WareHouseStatus.UNDER_MAINTENANCE">Bảo trì</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeStatusChangeModal()">Hủy</button>
+        <button class="btn btn-info" (click)="submitStatusChange()">Cập nhật</button>
       </div>
     </div>
   </div>
